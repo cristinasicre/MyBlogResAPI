@@ -5,10 +5,10 @@ import com.sicre.springblog.entity.Post;
 import com.sicre.springblog.exception.BlogAPIException;
 import com.sicre.springblog.exception.ResourceNotFoundException;
 import com.sicre.springblog.payload.CommentDto;
-import com.sicre.springblog.payload.PostDto;
 import com.sicre.springblog.repository.CommentRepository;
 import com.sicre.springblog.repository.PostRepository;
 import com.sicre.springblog.service.CommentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +21,12 @@ public class CommentServiceImpl implements CommentService {
     private PostRepository postRepository;
     private CommentRepository commentRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository) {
+    private ModelMapper mapper;
+
+    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.mapper = modelMapper;
     }
 
     @Override
@@ -112,23 +115,12 @@ public class CommentServiceImpl implements CommentService {
 
     //convert Entity to DTO
     private CommentDto mapToDto(Comment comment) {
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(comment.getId());
-        commentDto.setName(comment.getName());
-        commentDto.setBody(comment.getBody());
-        commentDto.setEmail(comment.getEmail());
-
-        return commentDto;
+        return mapper.map(comment, CommentDto.class);
     }
 
     //convert DTO to Entity
     private Comment mapToEntity(CommentDto commentDto) {
-        Comment comment = new Comment();
-        comment.setName(commentDto.getName());
-        comment.setBody(commentDto.getBody());
-        comment.setEmail(commentDto.getEmail());
-
-        return comment;
+        return mapper.map(commentDto, Comment.class);
     }
 
 }
